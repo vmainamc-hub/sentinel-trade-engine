@@ -58,6 +58,9 @@ class SentinelExecutionEngine {
   // Session Metrics & Recovery
   private sessionState: SessionState = {
     startingBalance: null,
+    accountStartBalance: null,
+    currentAccountBalance: null,
+    accountPnl: 0,
     sessionProfit: 0,
     sessionLoss: 0,
     netPnl: 0,
@@ -211,11 +214,27 @@ class SentinelExecutionEngine {
   }
 
   setAccount(account: AccountSession | null, client: DerivClient | null) {
+    const previousLoginid = this.activeAccount?.loginid;
     this.activeAccount = account;
     this.derivClient = client;
-    if (account && this.sessionState.startingBalance === null) {
-      this.sessionState.startingBalance = account.balance;
+
+    if (account) {
+      const accountChanged =
+        this.sessionState.accountStartBalance === null || previousLoginid !== account.loginid;
+      if (accountChanged) {
+        this.sessionState.startingBalance = account.balance;
+        this.sessionState.accountStartBalance = account.balance;
+      }
+      this.sessionState.currentAccountBalance = account.balance;
+      this.sessionState.accountPnl = Number(
+        (account.balance - (this.sessionState.accountStartBalance ?? account.balance)).toFixed(2),
+      );
+    } else {
+      this.sessionState.accountStartBalance = null;
+      this.sessionState.currentAccountBalance = null;
+      this.sessionState.accountPnl = 0;
     }
+
     this.recalculateEffectiveStake();
     this.notify();
   }
@@ -246,8 +265,12 @@ class SentinelExecutionEngine {
       cooldownUntil: 0,
       pauseReason: undefined,
     };
+    this.tradeTimestamps = [];
     if (this.activeAccount) {
       this.sessionState.startingBalance = this.activeAccount.balance;
+      this.sessionState.accountStartBalance = this.activeAccount.balance;
+      this.sessionState.currentAccountBalance = this.activeAccount.balance;
+      this.sessionState.accountPnl = 0;
     }
     this.recalculateEffectiveStake();
     this.notify();
@@ -472,7 +495,28 @@ class SentinelExecutionEngine {
     stakeOverride?: number
   ): GateEvaluationResult {
     const effectiveStake = stakeOverride ?? this.recalculateEffectiveStake();
-    const feedAge = Date.now() - this.lastIncomingTickTime;
+    const now = Date.now();
+    this.tradeTimestamps = this.tradeTimestamps.filter(
+      (ts) => now - ts < 24 * 60 * 60 * 1000,
+    );
+    const tradesLastHour = this.tradeTimestamps.filter(
+      (ts) => now - ts < 60 * 60 * 1000,
+    ).length;
+    const tradesToday = this.tradeTimestamps.length;
+
+    if (
+      this.mode === "LIVE" &&
+      this.activeAccount?.balance !== undefined &&
+      this.activeAccount?.balance !== null
+    ) {
+      this.sessionState.currentAccountBalance = this.activeAccount.balance;
+      this.sessionState.accountPnl = Number(
+        (this.activeAccount.balance -
+          (this.sessionState.accountStartBalance ?? this.activeAccount.balance)).toFixed(2),
+      );
+    }
+
+    const feedAge = now - this.lastIncomingTickTime;
 
     return riskManager.evaluateExecutionGates({
       signal,
@@ -491,6 +535,8 @@ class SentinelExecutionEngine {
       lastTickAgeMs: feedAge,
       openContractsCount: Array.from(this.openContracts.values()).filter((c) => c.status === "open").length,
       effectiveStake,
+      tradesLastHour,
+      tradesToday,
     });
   }
 
@@ -612,6 +658,7 @@ class SentinelExecutionEngine {
       this.openContracts.set(contractId, openContract);
       this.lastExecutionTime = Date.now();
       this.sessionState.tradesCount++;
+      this.tradeTimestamps.push(Date.now());
       riskManager.markSignalExecuted(signal.id);
 
       // Record trade in journal
