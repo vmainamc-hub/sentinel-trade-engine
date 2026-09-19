@@ -1,4 +1,4 @@
-// Shared live Deriv tick stream used by Sentinel and Precision Parity only.
+// Shared live Deriv tick stream used by Sentinel.
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { useDerivStream, DERIV_SYMBOLS, type DerivSymbol } from "@/hooks/useDerivStream";
 import type { Tick } from "@/lib/analytics";

@@ -1,0 +1,6 @@
+{
+  "name": "Sentinel Trade Engine",
+  "description": "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -16,17 +16,17 @@ export const Route = createFileRoute("/auth")({
   validateSearch: search,
   head: () => ({
     meta: [
-      { title: "Sign in — Precision Sentinel + Parity" },
+      { title: "Sign in — Precision Sentinel" },
       {
         name: "description",
         content:
-          "Sign in to access Precision Sentinel and Precision Parity.",
+          "Sign in to access the Precision Sentinel trading engine and apparatus.",
       },
-      { property: "og:title", content: "Sign in — Precision Sentinel + Parity" },
+      { property: "og:title", content: "Sign in — Precision Sentinel" },
       {
         property: "og:description",
         content:
-          "Sign in to access Sentinel and Parity intelligence.",
+          "Sign in to access Sentinel market intelligence and execution engine.",
       },
     ],
   }),

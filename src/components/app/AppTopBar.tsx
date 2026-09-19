@@ -1,43 +1,45 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useStream } from "@/lib/stream-context";
 import { useDerivAccount } from "@/lib/deriv/account-context";
-import { Wifi, WifiOff, Radio, Pause, Play, Wallet, Shield, Binary } from "lucide-react";
+import { Wifi, WifiOff, Radio, Pause, Play, Wallet, Shield, Zap } from "lucide-react";
 import { AlertSoundToggle } from "@/components/app/AlertSoundToggle";
 
 export function AppTopBar() {
   const s = useStream();
-  const location = useLocation();
   const { account, balance, currency, status: derivStatus } = useDerivAccount();
-  const isSentinel = location.pathname.includes("/app/apex");
-  const isParity = location.pathname.includes("/app/precision-parity");
 
   return (
     <header className="h-14 border-b border-border/40 glass sticky top-0 z-20 flex items-center gap-3 px-4">
-      <div className="flex items-center gap-2 mr-2">
+      <div className="flex items-center gap-2.5 mr-2">
         <div className="grid place-items-center w-8 h-8 rounded-lg bg-[var(--accent)]/15 border border-[var(--accent)]/30">
           <Shield className="w-4 h-4 text-[var(--accent)]" />
         </div>
-        <div className="hidden md:block text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground">
-          Precision Sentinel
+        <div className="flex flex-col">
+          <span className="text-[12px] font-bold uppercase tracking-[0.18em] text-foreground font-display">
+            Sentinel
+          </span>
+          <span className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground -mt-0.5">
+            Intelligence Engine
+          </span>
         </div>
       </div>
 
-      <nav className="flex items-center gap-1" aria-label="Primary">
+      <nav className="flex items-center gap-1.5 ml-2" aria-label="Primary">
         <Link
           to="/app/apex"
-          className={`h-9 px-4 rounded-md text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-colors ${
-            isSentinel ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-          }`}
+          activeProps={{ className: "bg-primary/20 text-primary border-primary/40 font-bold" }}
+          inactiveProps={{ className: "bg-secondary/40 text-muted-foreground hover:text-foreground border-border/50" }}
+          className="h-8 px-3 rounded-md text-xs uppercase tracking-wider flex items-center gap-1.5 border transition-all"
         >
-          <Shield size={13} /> Sentinel
+          <Shield size={13} /> Sentinel Brain
         </Link>
         <Link
-          to="/app/precision-parity"
-          className={`h-9 px-4 rounded-md text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-colors ${
-            isParity ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-          }`}
+          to="/app/executor"
+          activeProps={{ className: "bg-primary/20 text-primary border-primary/40 font-bold" }}
+          inactiveProps={{ className: "bg-secondary/40 text-muted-foreground hover:text-foreground border-border/50" }}
+          className="h-8 px-3 rounded-md text-xs uppercase tracking-wider flex items-center gap-1.5 border transition-all"
         >
-          <Binary size={13} /> Parity
+          <Zap size={13} className="text-amber-400" /> Executor
         </Link>
       </nav>
 

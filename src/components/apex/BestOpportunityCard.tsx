@@ -1,4 +1,5 @@
 import { useState, type RefObject } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -224,6 +225,12 @@ export function BestOpportunityCard({
         </div>
 
         <div className="flex items-center gap-2 self-start md:self-auto">
+          <Link
+            to="/app/executor"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs uppercase font-bold tracking-wider shadow-xs transition-all"
+          >
+            <Zap size={13} className="text-amber-300" /> Send to Executor
+          </Link>
           <Button
             size="sm"
             variant="outline"

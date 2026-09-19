@@ -78,13 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Precision Sentinel + Parity — Deriv digit intelligence" },
+      { title: "Precision Sentinel — Deriv Digit Intelligence Engine" },
       {
         name: "description",
         content:
           "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices. Connect your Deriv account and trade smarter.",
       },
-      { property: "og:title", content: "Precision Sentinel + Parity — Deriv digit intelligence" },
+      { property: "og:title", content: "Precision Sentinel — Deriv Digit Intelligence Engine" },
       {
         property: "og:description",
         content:
@@ -92,7 +92,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Precision Sentinel + Parity — Deriv digit intelligence" },
+      { name: "twitter:title", content: "Precision Sentinel — Deriv Digit Intelligence Engine" },
       {
         name: "twitter:description",
         content:

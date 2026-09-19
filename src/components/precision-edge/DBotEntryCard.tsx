@@ -1,6 +1,6 @@
 // Compact "DBot entry" card — turns an engine signal into the exact fields
 // a Deriv DBot would need to load: market, contract type, barrier/prediction,
-// duration, and entry directive. Used by Precision Edge and Precision Parity.
+// duration, and entry directive. Used by Precision Edge and Sentinel.
 import { Bot, Copy, Check } from "lucide-react";
 import { useState } from "react";
 

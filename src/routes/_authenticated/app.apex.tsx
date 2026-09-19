@@ -128,7 +128,7 @@ function ApexPage() {
     if (!qualify(live, alerts.config).ok) return null;
     const gate = operatorSurfaceGate(live, live.intel);
     return gate.qualified ? live : null;
-  }, [alerts.episode, alerts.config, apex.ranked]);
+  }, [alerts.episode, alerts.config, apex.ranked, apex.surfacedOpportunity]);
 
   const alertStale = !!alerts.episode && !alertedLive;
   // The operator surface is the first candidate that survives the mandatory surface gate;
