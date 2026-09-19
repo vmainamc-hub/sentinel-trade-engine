@@ -240,6 +240,52 @@ export function ExecutorSettingsDialog({
 
           {/* 2. Recovery / Martingale Tab */}
           <TabsContent value="recovery" className="space-y-3 pt-2">
+            <div className="grid grid-cols-3 gap-2 p-2.5 rounded-lg border border-border/60 bg-background/50">
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase text-muted-foreground">Runs / Signal</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={form.runsPerSignal}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      runsPerSignal: Math.min(10, Math.max(1, parseInt(e.target.value, 10) || 1)),
+                    })
+                  }
+                  className="h-8 text-xs font-bold"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase text-muted-foreground">Wait Entry Digit</Label>
+                <div className="h-8 flex items-center px-2 rounded border border-border/60 bg-background/50">
+                  <Switch
+                    checked={form.waitForEntryDigit}
+                    onCheckedChange={(checked) => setForm({ ...form, waitForEntryDigit: checked })}
+                  />
+                  <span className="ml-2 text-[10px]">{form.waitForEntryDigit ? "ARMED" : "IMMEDIATE"}</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase text-muted-foreground">Recovery Digit</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="9"
+                  placeholder="OFF"
+                  value={form.recoveryDigit ?? ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      recoveryDigit: e.target.value === "" ? null : Math.min(9, Math.max(0, parseInt(e.target.value, 10))),
+                    })
+                  }
+                  className="h-8 text-xs font-bold"
+                />
+              </div>
+            </div>
+
             <div className="p-2.5 rounded-lg bg-background/50 border border-border/60 flex items-center justify-between">
               <div>
                 <span className="font-bold uppercase text-foreground">Martingale Recovery Engine</span>
