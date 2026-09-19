@@ -117,6 +117,12 @@ class SentinelExecutionEngine {
       this.lastIncomingTickTime = Date.now();
 
       for (const [signalId, pending] of this.waitingEntrySignals) {
+        if (Date.now() > pending.signal.expiresAt) {
+          this.waitingEntrySignals.delete(signalId);
+          pending.queueItem.state = "EXPIRED";
+          pending.queueItem.rejectionReason = "Signal expired while waiting for entry digit";
+          continue;
+        }
         if (pending.signal.market !== symbol) continue;
         const pip = derivBus.getPipSize(symbol);
         const factor = Math.pow(10, pip);
@@ -124,10 +130,21 @@ class SentinelExecutionEngine {
         if (digit !== pending.requiredDigit) continue;
 
         this.waitingEntrySignals.delete(signalId);
+
+        // Re-run all execution gates at the exact entry tick. A signal can
+        // become stale or hit an account limit while it was waiting.
+        const stake = this.recalculateEffectiveStake();
+        const gate = this.evaluateGates(pending.signal, "AUTO", stake);
+        if (!gate.ok) {
+          pending.queueItem.state = "SKIPPED";
+          pending.queueItem.rejectionReason = gate.reason;
+          this.notify();
+          continue;
+        }
+
         pending.queueItem.state = "EXECUTING";
         this.notify();
 
-        const stake = this.recalculateEffectiveStake();
         void this.executeSignal(pending.signal, "AUTO", stake).then((res) => {
           if (res.ok) {
             pending.queueItem.state = "EXECUTED";
