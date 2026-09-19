@@ -1028,7 +1028,7 @@ class SentinelExecutionEngine {
     // 3. Check Target Profit Limit
     if (
       this.riskSettings.targetProfit !== null &&
-      this.sessionState.sessionProfit >= this.riskSettings.targetProfit
+      this.sessionState.accountPnl >= this.riskSettings.targetProfit
     ) {
       this.sessionState.isTargetProfitReached = true;
       this.pauseAuto("TARGET PROFIT REACHED");
@@ -1038,14 +1038,14 @@ class SentinelExecutionEngine {
       executionJournal.logEvent({
         type: "TARGET_PROFIT_REACHED",
         signalId: contract.signalId,
-        message: `TARGET PROFIT REACHED: +$${this.sessionState.sessionProfit.toFixed(2)}`,
+        message: `TARGET PROFIT REACHED: account P/L +${this.sessionState.accountPnl.toFixed(2)}`,
       });
     }
 
     // 4. Check Stop Loss Limit
     if (
       this.riskSettings.stopLoss !== null &&
-      this.sessionState.sessionLoss >= this.riskSettings.stopLoss
+      this.sessionState.accountPnl <= -Math.abs(this.riskSettings.stopLoss)
     ) {
       this.sessionState.isStopLossReached = true;
       this.pauseAuto("STOP LOSS REACHED");
@@ -1055,7 +1055,7 @@ class SentinelExecutionEngine {
       executionJournal.logEvent({
         type: "STOP_LOSS_REACHED",
         signalId: contract.signalId,
-        message: `STOP LOSS REACHED: -$${this.sessionState.sessionLoss.toFixed(2)}`,
+        message: `STOP LOSS REACHED: account P/L ${this.sessionState.accountPnl.toFixed(2)}`,
       });
     }
 
