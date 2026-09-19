@@ -42,22 +42,12 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
   const entryDigit = ep?.preferred ? ep.preferred.digit : undefined;
   const duration = ep?.durationTicks && ep.durationTicks > 0 ? ep.durationTicks : 1;
 
-  // Analytical classification from Sentinel (Informational only)
-  // The Executor treats all incoming signals as tradeable opportunities and does NOT block them.
-  let sentinelStatus: string = "ENTER NOW";
-  if (item.signal?.action === "ENTER") {
-    sentinelStatus = "ENTER NOW";
-  } else if (item.signal?.action === "PREPARE") {
-    sentinelStatus = "ARMED";
-  } else if (item.signal?.action === "WAIT") {
-    sentinelStatus = "WAIT";
-  } else if (item.score >= 70) {
-    sentinelStatus = "ENTER NOW";
-  } else if (item.score >= 50) {
-    sentinelStatus = "WATCH";
-  } else {
-    sentinelStatus = "ENTER NOW";
-  }
+  // Preserve Sentinel's authoritative state as information only. Executor
+  // never upgrades WATCH/WAIT/BLOCKED to ENTER NOW.
+  const sentinelStatus =
+    item.signal?.label ||
+    item.signal?.state ||
+    "UNCLASSIFIED";
 
   const now = Date.now();
   // Unique signal ID based on market, contract, tick epoch, entry digit
@@ -67,7 +57,7 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
   return {
     id,
     createdAt: now,
-    expiresAt: now + 30000, // 30-second window
+    expiresAt: now + 30000, // Default signal lifetime; Executor max TTL remains configurable
 
     market: item.symbol,
     marketName: item.name || item.symbol,
@@ -106,12 +96,12 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
       status: item.intel?.entropy?.uniformityFail ? "ANOMALY_SPIKE" : "PASS",
     },
 
-    qualificationStatus: "QUALIFIED",
+    qualificationStatus: item.signal?.state ?? "PENDING",
     sourceVersion: "Sentinel-Core-v3.2",
     metadata: {
       contractId: c.id,
       intelState: item.intel?.dataState,
-      spread: item.intel?.spread,
+      spread: item.intel?.spread,\n      baseSignalId: id,\n      runIndex: 1,\n      runsTotal: undefined,
     },
   };
 }
