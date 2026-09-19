@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppApexRouteImport } from './routes/_authenticated/app.apex'
-import { Route as AuthenticatedAppPrecisionParityRouteImport } from './routes/_authenticated/app.precision-parity'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,26 +45,17 @@ const AuthenticatedAppApexRoute = AuthenticatedAppApexRouteImport.update({
   path: '/apex',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const AuthenticatedAppPrecisionParityRoute =
-  AuthenticatedAppPrecisionParityRouteImport.update({
-    id: '/precision-parity',
-    path: '/precision-parity',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/apex': typeof AuthenticatedAppApexRoute
-  '/app/precision-parity': typeof AuthenticatedAppPrecisionParityRoute
   '/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/app/apex': typeof AuthenticatedAppApexRoute
-  '/app/precision-parity': typeof AuthenticatedAppPrecisionParityRoute
   '/app': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesById {
@@ -75,15 +65,14 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/apex': typeof AuthenticatedAppApexRoute
-  '/_authenticated/app/precision-parity': typeof AuthenticatedAppPrecisionParityRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/app' | '/app/apex' | '/app/precision-parity' | '/app/'
+    '/' | '/auth' | '/app' | '/app/apex' | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/app/apex' | '/app/precision-parity' | '/app'
+  to: '/' | '/auth' | '/app/apex' | '/app'
   id:
     | '__root__'
     | '/'
@@ -91,7 +80,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/app'
     | '/_authenticated/app/apex'
-    | '/_authenticated/app/precision-parity'
     | '/_authenticated/app/'
   fileRoutesById: FileRoutesById
 }
@@ -145,25 +133,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppApexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/precision-parity': {
-      id: '/_authenticated/app/precision-parity'
-      path: '/precision-parity'
-      fullPath: '/app/precision-parity'
-      preLoaderRoute: typeof AuthenticatedAppPrecisionParityRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
   }
 }
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppApexRoute: typeof AuthenticatedAppApexRoute
-  AuthenticatedAppPrecisionParityRoute: typeof AuthenticatedAppPrecisionParityRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppApexRoute: AuthenticatedAppApexRoute,
-  AuthenticatedAppPrecisionParityRoute: AuthenticatedAppPrecisionParityRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
 }
 
