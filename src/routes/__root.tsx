@@ -78,25 +78,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Precision Sentinel — Deriv Digit Intelligence Engine" },
+      { title: "Sentinel Trade Engine" },
       {
         name: "description",
         content:
-          "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices. Connect your Deriv account and trade smarter.",
+          "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices.",
       },
-      { property: "og:title", content: "Precision Sentinel — Deriv Digit Intelligence Engine" },
+      { property: "og:title", content: "Sentinel Trade Engine" },
       {
         property: "og:description",
         content:
-          "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices. Connect your Deriv account and trade smarter.",
+          "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Precision Sentinel — Deriv Digit Intelligence Engine" },
+      { name: "twitter:title", content: "Sentinel Trade Engine" },
       {
         name: "twitter:description",
         content:
-          "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices. Connect your Deriv account and trade smarter.",
+          "Real-time AI market scanner, high-confidence signal engine and automated trading for Deriv synthetic indices.",
       },
       {
         property: "og:image",
