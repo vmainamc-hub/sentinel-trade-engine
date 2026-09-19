@@ -45,6 +45,7 @@ function SentinelExecutorPage() {
     currency,
     isVirtual,
     isConnected,
+    refreshAccount,
 
     risk,
     updateRiskSettings,
