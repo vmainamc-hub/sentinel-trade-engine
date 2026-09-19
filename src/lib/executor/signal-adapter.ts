@@ -75,7 +75,6 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
     score: Math.round(item.score ?? 0),
 
     sentinelStatus,
-    parityStatus: "N/A - SENTINEL EXCLUSIVE",
 
     psychology: {
       winningZoneShare: item.digitPsychology?.winningShare ?? 0,
@@ -102,7 +101,8 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
       contractId: c.id,
       intelState: item.intel?.dataState,
       spread: item.intel?.spread,
-      baseSignalId: id,\n      runIndex: 1,\n      runsTotal: undefined,
+      baseSignalId: id,
+      runIndex: 1,\n      runsTotal: undefined,
     },
   };
 }

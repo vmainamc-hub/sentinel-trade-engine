@@ -57,7 +57,6 @@ export interface ExecutionSignal {
 
   // Sentinel analytical classification (informational for the operator, does NOT gate execution)
   sentinelStatus: "ENTER NOW" | "ARMED" | "PREPARE" | "WAIT" | "WATCH" | "NO TRADE" | "BLOCKED" | string;
-  parityStatus?: string; // Informational tag
 
   psychology?: {
     winningZoneShare: number;
@@ -197,7 +196,7 @@ export const DEFAULT_RISK_SETTINGS: RiskSettings = {
   contractTakeProfit: null,
   contractStopLoss: null,
   maxDailyProfit: null,
-  maxDailyLoss: 25.0,
+  maxDailyLoss: null,
 
   maxTradesPerSession: 50,
   maxTradesPerHour: 20,
