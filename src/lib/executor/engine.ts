@@ -1062,6 +1062,23 @@ class SentinelExecutionEngine {
     const totalFinished = this.sessionState.wins + this.sessionState.losses;
     this.sessionState.winRate = totalFinished > 0 ? Math.round((this.sessionState.wins / totalFinished) * 100) : 0;
 
+    // Keep the account-scoped baseline authoritative for target/stop decisions.
+    // Paper mode mirrors settlement P/L locally; LIVE mode uses the latest account balance.
+    if (this.mode === "PAPER") {
+      this.sessionState.currentAccountBalance =
+        (this.sessionState.currentAccountBalance ?? 10000) + settlement.finalProfit;
+      this.sessionState.accountPnl = Number(
+        (this.sessionState.currentAccountBalance -
+          (this.sessionState.accountStartBalance ?? 10000)).toFixed(2),
+      );
+    } else if (this.activeAccount?.balance !== undefined && this.activeAccount?.balance !== null) {
+      this.sessionState.currentAccountBalance = this.activeAccount.balance;
+      this.sessionState.accountPnl = Number(
+        (this.activeAccount.balance -
+          (this.sessionState.accountStartBalance ?? this.activeAccount.balance)).toFixed(2),
+      );
+    }
+
     // 2. Cooldown timer
     if (this.riskSettings.cooldownSeconds > 0) {
       this.sessionState.cooldownUntil = Date.now() + this.riskSettings.cooldownSeconds * 1000;
