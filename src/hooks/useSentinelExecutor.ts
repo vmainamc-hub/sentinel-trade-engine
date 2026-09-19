@@ -76,8 +76,14 @@ export function useSentinelExecutor() {
       const sig = buildExecutionSignal(opp);
       sig.id = `SIG-${opp.symbol}-${opp.contract.id}-${sigId}`;
       sig.createdAt = Date.now();
-      sig.sentinelStatus = "ENTER NOW";
-      sig.qualificationStatus = "QUALIFIED";
+      const settings = sentinelExecutor.getRiskSettings();
+      sig.metadata = {
+        ...sig.metadata,
+        baseSignalId: sig.id,
+        runIndex: 1,
+        runsTotal: settings.runsPerSignal,
+        recoveryDigit: settings.recoveryDigit,
+      };
 
       sentinelExecutor.receiveSignal(sig);
       sentinelExecutor.stageSignal(sig);
@@ -90,8 +96,14 @@ export function useSentinelExecutor() {
       const opp = apex.surfacedOpportunity;
       if (opp && opp.symbol && opp.contract) {
         const sig = buildExecutionSignal(opp);
-        sig.sentinelStatus = "ENTER NOW";
-        sig.qualificationStatus = "QUALIFIED";
+        const settings = sentinelExecutor.getRiskSettings();
+        sig.metadata = {
+          ...sig.metadata,
+          baseSignalId: sig.id,
+          runIndex: 1,
+          runsTotal: settings.runsPerSignal,
+          recoveryDigit: settings.recoveryDigit,
+        };
         sentinelExecutor.receiveSignal(sig);
         sentinelExecutor.stageSignal(sig);
       }
