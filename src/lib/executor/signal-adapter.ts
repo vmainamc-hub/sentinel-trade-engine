@@ -92,8 +92,8 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
       clearanceStatus: "CLEARED",
     },
     liquiditySweep: {
-      passed: !item.intel?.entropy?.uniformityFail,
-      status: item.intel?.entropy?.uniformityFail ? "ANOMALY_SPIKE" : "PASS",
+      passed: Boolean(item.observationDossier?.liquiditySweep?.confirmed),
+      status: item.observationDossier?.liquiditySweep?.state ?? "UNKNOWN",
     },
 
     qualificationStatus: item.signal?.state ?? "PENDING",
@@ -101,7 +101,8 @@ export function buildExecutionSignal(item: RankedOpportunity): ExecutionSignal {
     metadata: {
       contractId: c.id,
       intelState: item.intel?.dataState,
-      spread: item.intel?.spread,\n      baseSignalId: id,\n      runIndex: 1,\n      runsTotal: undefined,
+      spread: item.intel?.spread,
+      baseSignalId: id,\n      runIndex: 1,\n      runsTotal: undefined,
     },
   };
 }
