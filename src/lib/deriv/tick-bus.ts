@@ -15,9 +15,9 @@ import type { Tick } from "@/lib/analytics";
 import { DERIV_WS_URL } from "@/lib/deriv-ws";
 
 export const DERIV_FALLBACK_ENDPOINTS = [
-  "wss://ws.derivws.com/websockets/v3?app_id=1089",
   DERIV_WS_URL,
-  "wss://ws.binaryws.com/websockets/v3?app_id=1089",
+  "wss://ws.derivws.com/websockets/v3",
+  "wss://ws.binaryws.com/websockets/v3",
 ];
 
 const MAX_BUFFER = 1000;
