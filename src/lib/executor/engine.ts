@@ -112,9 +112,33 @@ class SentinelExecutionEngine {
   }
 
   private initTickListener() {
-    // Monitor global Deriv tick flow to track feed health and paper execution
-    derivBus.onTick(() => {
+    // Monitor global Deriv tick flow and release AUTO only when the requested entry digit prints.
+    derivBus.onTick((symbol, tick) => {
       this.lastIncomingTickTime = Date.now();
+
+      for (const [signalId, pending] of this.waitingEntrySignals) {
+        if (pending.signal.market !== symbol) continue;
+        const pip = derivBus.getPipSize(symbol);
+        const factor = Math.pow(10, pip);
+        const digit = Math.abs(Math.round(tick.price * factor)) % 10;
+        if (digit !== pending.requiredDigit) continue;
+
+        this.waitingEntrySignals.delete(signalId);
+        pending.queueItem.state = "EXECUTING";
+        this.notify();
+
+        const stake = this.recalculateEffectiveStake();
+        void this.executeSignal(pending.signal, "AUTO", stake).then((res) => {
+          if (res.ok) {
+            pending.queueItem.state = "EXECUTED";
+            pending.queueItem.executedContractId = res.contractId;
+          } else {
+            pending.queueItem.state = "REJECTED";
+            pending.queueItem.rejectionReason = res.error;
+          }
+          this.notify();
+        });
+      }
     });
   }
 
@@ -467,10 +491,27 @@ class SentinelExecutionEngine {
     if (!gate.ok) {
       queueItem.state = "SKIPPED";
       queueItem.rejectionReason = gate.reason;
+      this.notify();
       return;
     }
 
-    // All execution gates passed -> update state and execute
+    if (this.riskSettings.waitForEntryDigit && signal.entryDigit !== undefined) {
+      queueItem.state = "WAITING";
+      this.waitingEntrySignals.set(signal.id, {
+        signal,
+        queueItem,
+        requiredDigit: signal.entryDigit,
+      });
+      executionJournal.logEvent({
+        type: "SIGNAL_LOADED",
+        signalId: signal.id,
+        message: `Waiting for entry digit ${signal.entryDigit} on ${signal.market}`,
+        details: { entryDigit: signal.entryDigit, contract: signal.contractLabel },
+      });
+      this.notify();
+      return;
+    }
+
     queueItem.state = "EXECUTING";
     this.notify();
 
@@ -653,6 +694,14 @@ class SentinelExecutionEngine {
         isSellable: false,
         mode,
         accountLoginid: accountId,
+        baseSignalId: String(signal.metadata?.baseSignalId ?? signal.id),
+        runIndex: Number(signal.metadata?.runIndex ?? 1),
+        runsTotal: Number(signal.metadata?.runsTotal ?? this.riskSettings.runsPerSignal),
+        entryDigit: signal.entryDigit,
+        recoveryDigit:
+          signal.metadata?.recoveryDigit === null || signal.metadata?.recoveryDigit === undefined
+            ? this.riskSettings.recoveryDigit
+            : Number(signal.metadata.recoveryDigit),
       };
 
       this.openContracts.set(contractId, openContract);
@@ -1149,6 +1198,45 @@ class SentinelExecutionEngine {
       message: `Contract ${contractId} settled: ${settlement.result} (${settlement.finalProfit >= 0 ? "+" : ""}$${settlement.finalProfit.toFixed(2)})`,
       details: { contractId, ...settlement },
     });
+
+    if (
+      this.autoState === "ON" &&
+      contract.runIndex !== undefined &&
+      contract.runsTotal !== undefined &&
+      contract.runIndex < contract.runsTotal
+    ) {
+      const nextRun = contract.runIndex + 1;
+      const requiredDigit =
+        settlement.result === "LOSS" &&
+        contract.recoveryDigit !== null &&
+        contract.recoveryDigit !== undefined
+          ? contract.recoveryDigit
+          : contract.entryDigit;
+
+      const baseSignalId = contract.baseSignalId ?? contract.signalId;
+      const sourceSignal =
+        this.signalQueue.find((q) => q.signal.id === contract.signalId)?.signal ?? null;
+
+      if (sourceSignal) {
+        const now = Date.now();
+        const nextSignal: ExecutionSignal = {
+          ...sourceSignal,
+          id: `${baseSignalId}:run:${nextRun}:${now}`,
+          createdAt: now,
+          expiresAt: now + this.riskSettings.maxSignalAgeSeconds * 1000,
+          entryDigit: requiredDigit,
+          metadata: {
+            ...sourceSignal.metadata,
+            baseSignalId,
+            runIndex: nextRun,
+            runsTotal: contract.runsTotal,
+            recoveryDigit: contract.recoveryDigit,
+            previousRunResult: settlement.result,
+          },
+        };
+        this.receiveSignal(nextSignal);
+      }
+    }
 
     // Remove from active open contracts after display
     setTimeout(() => {
