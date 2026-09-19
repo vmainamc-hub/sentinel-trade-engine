@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";\nimport { DERIV_APP_ID } from "@/lib/deriv/api";
 
 interface AccountConnectionCardProps {
   account: {
@@ -45,7 +45,7 @@ export function AccountConnectionCard({
 
     try {
       // Connect to Deriv WS with token to test and retrieve details
-      const ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+      const ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=${DERIV_APP_ID}");
       await new Promise<void>((resolve, reject) => {
         ws.onopen = () => {
           ws.send(JSON.stringify({ authorize: tokenInput.trim() }));
