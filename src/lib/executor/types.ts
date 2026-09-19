@@ -258,6 +258,12 @@ export interface OpenContract {
   bidPrice?: number;
   mode: ExecutionMode;
   accountLoginid: string;
+  /** Multi-run execution metadata; optional for legacy/manual records. */
+  baseSignalId?: string;
+  runIndex?: number;
+  runsTotal?: number;
+  entryDigit?: number;
+  recoveryDigit?: number | null;
 }
 
 export interface DetailedTradeRecord {
