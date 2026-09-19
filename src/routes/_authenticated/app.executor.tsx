@@ -225,7 +225,8 @@ function SentinelExecutorPage() {
             account={account}
             balance={balance}
             currency={currency}
-            status={isConnected ? "open" : "disconnected"}
+            status={isConnected ? "open" : "closed"}
+            onRefresh={refreshAccount}
           />
 
           {/* Execution Policy & Risk Rules Summary Card */}
@@ -268,10 +269,6 @@ function SentinelExecutorPage() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Max Open Contracts:</span>
                 <span className="text-foreground">{risk.maxOpenContracts}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Max Daily Loss:</span>
-                <span className="text-rose-400 font-bold">${risk.maxDailyLoss ?? 25}</span>
               </div>
             </div>
 
