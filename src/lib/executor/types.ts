@@ -110,6 +110,7 @@ export interface ProfitLossSettings {
   contractTakeProfit: number | null; // null = OFF
   contractStopLoss: number | null; // null = OFF
   maxDailyProfit: number | null; // null = OFF
+  /** Legacy daily-loss control is intentionally OFF by default; session/account stop-loss is authoritative. */
   maxDailyLoss: number | null; // null = OFF
 }
 
