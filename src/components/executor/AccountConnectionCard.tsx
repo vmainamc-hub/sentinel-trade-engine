@@ -45,7 +45,7 @@ export function AccountConnectionCard({
 
     try {
       // Connect to Deriv WS with token to test and retrieve details
-      const ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=${DERIV_APP_ID}");
+      const ws = new WebSocket(`wss://ws.derivws.com/websockets/v3?app_id=${DERIV_APP_ID}`);
       await new Promise<void>((resolve, reject) => {
         ws.onopen = () => {
           ws.send(JSON.stringify({ authorize: tokenInput.trim() }));
