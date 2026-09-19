@@ -183,8 +183,14 @@ export function useSentinelExecutor() {
       const testId = `SIG-${opp.symbol}-${opp.contract.id}-${Date.now()}`;
       sig.id = testId;
       sig.createdAt = Date.now();
-      sig.sentinelStatus = "ENTER NOW";
-      sig.qualificationStatus = "QUALIFIED";
+      const settings = sentinelExecutor.getRiskSettings();
+      sig.metadata = {
+        ...sig.metadata,
+        baseSignalId: sig.id,
+        runIndex: 1,
+        runsTotal: settings.runsPerSignal,
+        recoveryDigit: settings.recoveryDigit,
+      };
       sentinelExecutor.receiveSignal(sig);
       sentinelExecutor.stageSignal(sig);
       return sig;
